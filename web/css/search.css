@@ -1,0 +1,159 @@
+html {
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+html, body, #root {
+    height:100%;
+    font-family: cursive;
+}
+
+body {
+    height: 100vh;
+    background: antiquewhite;
+}
+a {
+    text-decoration: none;
+    color: #8BC34A ;
+}
+ul.tab-info-ul {
+    display: flex;
+    flex-direction: column; 
+    list-style-type: none;
+    margin: 0px;
+}
+
+li.tab-info-li {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    background: antiquewhite;
+    width:100%;
+    margin-right: 25px;
+    padding: 5px 0px;
+}
+
+td {
+    height: 100%;
+}
+
+td input {
+    height: 100%;
+    border: none;
+}
+
+td.photo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.selected {
+    background:black;
+}
+
+button {
+    background: white;
+    border: 1px solid black;
+    border-radius: 3px;
+}
+
+button .rank-up {
+    color: #9C27B0;
+}
+
+td select {
+    width: 100%;
+}
+
+.user-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.user-table {
+    flex-grow: 3;
+    display: flex;
+    justify-content: center;
+}
+
+.user-pagination {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-right: 24px;
+}
+
+a:hover {
+    color: deeppink !important;
+    cursor: pointer;
+}
+
+.nav-bar {
+    display: flex;
+    justify-content: space-between;
+}
+
+.nav-bar span {
+    color: #fcffe1 ;
+    text-align: center;
+    vertical-align: center;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+}
+
+.nav-bar .menu li a {
+    color: #fcffe1;
+    border-bottom: 1px dashed;
+}
+
+.menu {
+    margin: 0;
+    list-style: none;
+    display: flex;
+}
+
+.menu li {
+    padding: 5px 25px;
+}
+
+.custom-shape-divider-top-1597926621 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    z-index: -1;
+}
+
+ul.tab-info-ul li a {
+    color: #8BC34A;
+}
+
+h1.title {
+    text-align:center; 
+}
+
+form.search {
+    display: flex;
+    justify-content: center;
+}
+
+svg {
+    filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+}
+
+.role-list {
+    flex-grow: 1;
+}
+
+.promotion-container {
+    display: flex;
+    justify-content: center;
+}
