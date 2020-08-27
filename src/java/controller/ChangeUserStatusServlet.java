@@ -1,28 +1,25 @@
 package controller;
 
 import dao.UserDAO;
-import entity.User;
 import java.io.IOException;
-import java.io.PrintWriter;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import util.URLConstants;
-
+import org.apache.log4j.Logger;
 /**
  *
  * @author HOME
  */
 @WebServlet(name = "ChangeUserStatusServlet", urlPatterns = {"/change-user-status"})
 public class ChangeUserStatusServlet extends HttpServlet {
-
+    
+    static final Logger LOGGER = Logger.getLogger(CreateUserServlet.class);
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        System.out.println("CHangeUser");
         String id = request.getParameter("id");
         if (id != null && !id.isEmpty()) {
             UserDAO userDAO = new UserDAO();
@@ -46,4 +43,13 @@ public class ChangeUserStatusServlet extends HttpServlet {
         return "Short description";
     }
 
+        @Override
+    public void init() throws ServletException {
+        LOGGER.info("INITILIZED");
+    }
+
+    @Override
+    public void destroy() {
+        LOGGER.info("Destroyed");
+    }
 }

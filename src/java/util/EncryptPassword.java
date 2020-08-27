@@ -8,12 +8,15 @@ package util;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author ThongLV
  */
 public class EncryptPassword {
+
+    static final Logger LOGGER = Logger.getLogger(EncryptPassword.class);
 
     public static String encrypt(String passwordToHash) {
         String generatedPassword = null;
@@ -27,7 +30,7 @@ public class EncryptPassword {
             }
             generatedPassword = sb.toString();
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            LOGGER.error(e);
         }
         return generatedPassword;
     }

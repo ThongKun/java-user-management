@@ -15,6 +15,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 import util.URLConstants;
 
 /**
@@ -36,11 +37,14 @@ public class MainFilter implements Filter {
         URLConstants.VIEW_PROMOTION_REQUEST,
         URLConstants.ADD_TO_PROMOTION_REQUEST,
         URLConstants.REMOVE_USER_FROM_PROMOTION_REQUEST,
-        URLConstants.UPDATE_USER_RANK_REQUEST};
-    private final String[] LEGAL_URL_FOR_STUDENT = {
+        URLConstants.UPDATE_USER_RANK_REQUEST,
+        URLConstants.VIEW_PROMOTION_HISTORY_REQUEST};
+    private final String[] LEGAL_URL_FOR_OTHER_USER = {
         URLConstants.SEARCH_PAGE,
-        URLConstants.LOG_OUT,};
-
+        URLConstants.LOG_OUT,
+        URLConstants.VIEW_PROMOTION_HISTORY_REQUEST};
+    static final Logger LOGGER = Logger.getLogger(MainFilter.class);
+    
     private static final boolean debug = true;
 
     private FilterConfig filterConfig = null;
@@ -51,7 +55,7 @@ public class MainFilter implements Filter {
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
-            log("MainFilter:DoBeforeProcessing");
+            LOGGER.info("DoBeforeProcessing");
         }
     }
 
@@ -66,6 +70,7 @@ public class MainFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain)
             throws IOException, ServletException {
+        doBeforeProcessing(request, response);
         String uri = ((HttpServletRequest) request).getRequestURI();
         if (uri.indexOf("/images") > 0) {
             chain.doFilter(request, response);
@@ -87,39 +92,35 @@ public class MainFilter implements Filter {
         String loginURI = httpRequest.getContextPath() + BACKSLASH + URLConstants.LOGIN_REQUEST;
         boolean isLoginRequest = httpRequest.getRequestURI().equals(loginURI);
         boolean isLoginPage = httpRequest.getRequestURI().endsWith(URLConstants.LOGIN_PAGE);
-        boolean isSignupPage = httpRequest.getRequestURI().endsWith(URLConstants.SIGN_UP_REQUEST);
 
         if (isLoggedIn && (isLoginRequest || isLoginPage)) {
             //login roi mà muốn login lại thì sẽ vào home page
-            HttpSession session2 = httpRequest.getSession(false);
-
             RequestDispatcher dispatcher = request.getRequestDispatcher(URLConstants.SEARCH_REQUEST);
             dispatcher.forward(request, response);
         } else if (isLoggedIn) {
             //khi login roi
             HttpSession session2 = httpRequest.getSession(false);
             User userinfo = (User) session2.getAttribute("userinfo");
-            System.out.println("role:  " + userinfo.getRole());
+            LOGGER.info("role: " + userinfo.getRole());
             if (userinfo != null
                     && "admin".equals(userinfo.getRole().getName())) {
-                System.out.println("Filter -> role admin");
+                LOGGER.info("Filter -> role admin");
                 String currentPath = httpRequest.getRequestURI().substring(httpRequest.getContextPath().length() + 1);
-                System.out.println("url " + currentPath);
+                LOGGER.info("Current Path: " + currentPath);
                 if (Arrays.asList(LEGAL_URL_FOR_ADMIN).contains(currentPath)) { //Cac Request/Page Admin co the truy cap
-                    System.out.println("here");
+                    LOGGER.info("Go To Requests/Pages Admin Allowed");
                     chain.doFilter(request, response);
                 } else {
                     //Cac Request/Page lạ thì sẽ vào luôn redirect đên trang search-quiz.jsp
-//                    httpResponse.sendRedirect("");
                     RequestDispatcher dispatcher = request.getRequestDispatcher(URLConstants.SEARCH_REQUEST);
                     dispatcher.forward(request, response);
                 }
             } else {
                 //cac role khac, o day la role student
                 //kiem tra url ton tai thi cho phep tiep tuc
-                System.out.println("Filter -> role Student");
+                LOGGER.info("Other Authenticated User");
                 String currentPath = httpRequest.getRequestURI().substring(httpRequest.getContextPath().length() + 1);
-                if (Arrays.asList(LEGAL_URL_FOR_STUDENT).contains(currentPath)) {
+                if (Arrays.asList(LEGAL_URL_FOR_OTHER_USER).contains(currentPath)) {
                     chain.doFilter(request, response);
                 } else {
                     //neu khong -> luon luon se vao trang search
@@ -128,19 +129,10 @@ public class MainFilter implements Filter {
                 }
             }
         } else {
-            System.out.println("Login: False");
+            LOGGER.info("Guest not Logged in yet");
             //Khi chưa login
-            if (isLoginPage) {
-                RequestDispatcher dispatcher = request.getRequestDispatcher(URLConstants.LOGIN_REQUEST);
-                dispatcher.forward(request, response);
-            } else if (isSignupPage) {
-                System.out.println("isSignUpPage");
-                RequestDispatcher dispatcher = request.getRequestDispatcher(URLConstants.SIGN_UP_REQUEST);
-                dispatcher.forward(request, response);
-            } else {
-                RequestDispatcher dispatcher = request.getRequestDispatcher(URLConstants.LOGIN_REQUEST);
-                dispatcher.forward(request, response);
-            }
+            RequestDispatcher dispatcher = request.getRequestDispatcher(URLConstants.LOGIN_REQUEST);
+            dispatcher.forward(request, response);
         }
     }
 

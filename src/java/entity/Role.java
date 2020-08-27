@@ -3,12 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package entity;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -28,7 +27,7 @@ import javax.persistence.TemporalType;
  * @author ThongLV
  */
 @Entity
-@Table(catalog = "lab01", schema = "")
+@Table(catalog = "lab01", name = "role", schema = "dbo")
 @NamedQueries({
     @NamedQuery(name = "Role.findAll", query = "SELECT r FROM Role r"),
     @NamedQuery(name = "Role.findById", query = "SELECT r FROM Role r WHERE r.id = :id"),
@@ -36,6 +35,7 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "Role.findByCreateAt", query = "SELECT r FROM Role r WHERE r.createAt = :createAt"),
     @NamedQuery(name = "Role.findByUpdateAt", query = "SELECT r FROM Role r WHERE r.updateAt = :updateAt")})
 public class Role implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,7 +52,7 @@ public class Role implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateAt;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "role")
-    private Collection<User> userCollection;
+    private List<User> userList;
 
     public Role() {
     }
@@ -98,12 +98,12 @@ public class Role implements Serializable {
         this.updateAt = updateAt;
     }
 
-    public Collection<User> getUserCollection() {
-        return userCollection;
+    public List<User> getUserList() {
+        return userList;
     }
 
-    public void setUserCollection(Collection<User> userCollection) {
-        this.userCollection = userCollection;
+    public void setUserList(List<User> userList) {
+        this.userList = userList;
     }
 
     @Override
@@ -128,7 +128,7 @@ public class Role implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Role[ id=" + id + " ]";
+        return "entity.test.Role[ id=" + id + " ]";
     }
 
 }

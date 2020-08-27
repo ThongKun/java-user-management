@@ -5,21 +5,22 @@ import dao.UserDAO;
 import entity.Promotion;
 import entity.User;
 import java.io.IOException;
-import java.io.PrintWriter;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 import util.URLConstants;
 
 /**
  *
- * @author HOME
+ * @author ThongLV
  */
 @WebServlet(name = "AddToPromotionServlet", urlPatterns = {"/add-to-promotion"})
 public class AddToPromotionServlet extends HttpServlet {
+
+    static final Logger LOGGER = Logger.getLogger(AddToPromotionServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -53,4 +54,13 @@ public class AddToPromotionServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    @Override
+    public void init() throws ServletException {
+        LOGGER.info("INITILIZED");
+    }
+
+    @Override
+    public void destroy() {
+        LOGGER.info("Destroyed");
+    }
 }

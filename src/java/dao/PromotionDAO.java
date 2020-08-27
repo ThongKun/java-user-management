@@ -3,12 +3,12 @@ package dao;
 import entity.Promotion;
 import java.io.Serializable;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import org.apache.log4j.Logger;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 
 /**
  *
@@ -17,6 +17,7 @@ import javax.persistence.Query;
 public class PromotionDAO implements Serializable {
 
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("lab01PU");
+    static final Logger LOGGER = Logger.getLogger(PromotionDAO.class);
 
     public void persist(Promotion object) {
         EntityManager em = emf.createEntityManager();
@@ -25,33 +26,56 @@ public class PromotionDAO implements Serializable {
             em.persist(object);
             em.getTransaction().commit();
         } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
+            LOGGER.error("Exception: " + e);
             em.getTransaction().rollback();
         } finally {
             em.close();
         }
     }
 
-    public List<Promotion> findPromotions() {
+    public List<Promotion> findPromotions(String sort) {
         EntityManager em = emf.createEntityManager();
+        ((JpaEntityManager) em.getDelegate()).getServerSession().getIdentityMapAccessor().invalidateAll();
         try {
-            Query query = em.createNamedQuery("Promotion.findAll");
+            String jpql = "SELECT p FROM Promotion p ORDER BY p.updateAt " + sort;
+            Query query = em.createQuery(jpql);
             return query.getResultList();
+        } catch (Exception e) {
+            LOGGER.error("Exception: " + e);
         } finally {
             em.close();
         }
+        return null;
+    }
+
+    public List<Promotion> findPromotions() {
+        EntityManager em = emf.createEntityManager();
+        ((JpaEntityManager) em.getDelegate()).getServerSession().getIdentityMapAccessor().invalidateAll();
+        try {
+            Query query = em.createQuery("SELECT p FROM Promotion p");
+            return query.getResultList();
+        } catch (Exception e) {
+            LOGGER.error("Exception: " + e);
+        } finally {
+            em.close();
+        }
+        return null;
     }
 
     public Promotion findPromotionByUserId(int userId) {
         EntityManager em = emf.createEntityManager();
+        ((JpaEntityManager) em.getDelegate()).getServerSession().getIdentityMapAccessor().invalidateAll();
         try {
             String jpql = "SELECT p FROM Promotion p WHERE p.userId.id = :userId";
             Query query = em.createQuery(jpql);
             query.setParameter("userId", userId);
-            return  query.getResultList().size() > 0 ? (Promotion)query.getSingleResult(): null;
-        }finally {
+            return query.getResultList().size() > 0 ? (Promotion) query.getSingleResult() : null;
+        } catch (Exception e) {
+            LOGGER.error("Exception: " + e);
+        } finally {
             em.close();
         }
+        return null;
     }
 
     public void removePromotion(int promotionId) {
@@ -65,7 +89,7 @@ public class PromotionDAO implements Serializable {
             query.executeUpdate();
             em.getTransaction().commit();
         } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
+            LOGGER.error("Exception: " + e);
             em.getTransaction().rollback();
         } finally {
             em.close();
@@ -80,9 +104,10 @@ public class PromotionDAO implements Serializable {
             Promotion currentPromotion = (Promotion) query.getSingleResult();
             em.getTransaction().begin();
             currentPromotion.setScore(score);
+            em.merge(currentPromotion);
             em.getTransaction().commit();
         } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", e);
+            LOGGER.error("Exception: " + e);
             em.getTransaction().rollback();
         } finally {
             em.close();

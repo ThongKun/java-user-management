@@ -23,14 +23,21 @@
             </svg>
         </div>
         <div class="nav-bar">
-            <span>Van Thong > Role: ${sessionScope.userinfo.role.name} </span>
+            <span>${sessionScope.userinfo.name} > Role: ${sessionScope.userinfo.role.name} </span>
             <ul class="menu">
-                <li><a href="view-promotion">Promotion List</a></li>
+                <li><a href="view-promotion-history">View Promotion History</a></li>
+                    <c:if test="${sessionScope.userinfo.role.name == 'admin'}">
+                    <li>
+                        <a href="view-promotion">
+                            Promotion List
+                        </a>
+                    </li>
+                </c:if>
                 <li><a href="logout">Log Out</a></li>
             </ul>
         </div>
 
-        <h1 class="title">Search Page</h1>
+        <h1 class="title">Members in Hall Of Fame</h1>
 
         <form class="search" action="search">
             <input type="text" name="s" value="${param.s}"/>
@@ -40,11 +47,14 @@
 
         <hr/>
 
-        <button style="border: none;    border-bottom: 1px inset;    border-radius: unset; float:right">
-            <a href="create-new-user" style="color:#8BC34A;font-size: 15px;">Create new user</a>
-        </button><br/><br/>
+        <c:if test="${sessionScope.userinfo.role.name == 'admin'}">
+            <button style="border: none;    border-bottom: 1px inset;    border-radius: unset; float:right">
+                <a href="create-new-user" style="color:#8BC34A;font-size: 15px;">Create new user</a>
+            </button>
+        </c:if>
+        <br/><br/>
 
-
+        <!--Nav Role-->
         <div class="user-container">
             <div class="role-list">
                 <ul class="tab-info-ul">
@@ -57,9 +67,11 @@
                         </li>
                     </c:if>
                     <c:forEach items="${requestScope.ROLES}" var="item" begin="1">
-                        <li class="tab-info-li" <c:if test="${param.roleId eq item.id}">style="background:#897870;"</c:if>>
-                            <a href="${pageContext.request.contextPath}?roleId=${item.id}&s=${not empty param.s ? param.s : ''}">${item.name}</a>
-                        </li>
+                        <c:if test="${sessionScope.userinfo.role.id eq item.id || sessionScope.userinfo.role.id eq 1}">
+                            <li class="tab-info-li" <c:if test="${param.roleId eq item.id}">style="background:#897870;"</c:if>>
+                                <a href="${pageContext.request.contextPath}?roleId=${item.id}&s=${not empty param.s ? param.s : ''}">${item.name}</a>
+                            </li>
+                        </c:if>
                     </c:forEach>
                 </ul>
             </div>
@@ -76,7 +88,9 @@
                                     <th>photo</th>
                                     <th>role</th>
                                     <th>active</th>
-                                    <th></th>
+                                        <c:if test="${sessionScope.userinfo.role.name == 'admin'}">
+                                        <th></th>
+                                        </c:if>
                                 </tr>
                             </thead>
                             <tbody>
@@ -91,32 +105,36 @@
                                         </td>
                                         <td>${item.role.name}</td>
                                         <td>${item.status}</td>
-                                        <td>
-                                            <button type="submit">
-                                                <a href="update-user?id=${item.id}" style="color:blue">Update</a>
-                                            </button>
-                                            <c:choose>
-                                                <c:when test="${item.status}">
-                                                    <button>
-                                                        <a href="change-user-status?id=${item.id}" style="color:#6c6a6c">Ban</a>
+
+                                        <c:if test="${sessionScope.userinfo.role.name == 'admin'}">
+                                            <td>
+                                                <button type="submit">
+                                                    <a href="update-user?id=${item.id}" style="color:blue">Update</a>
+                                                </button>
+                                                <c:choose>
+                                                    <c:when test="${item.status}">
+                                                        <button>
+                                                            <a href="change-user-status?id=${item.id}" style="color:#6c6a6c">Ban</a>
+                                                        </button> 
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <button>
+                                                            <a href="change-user-status?id=${item.id}" style="color:#3cb027">Activate</a>
+                                                        </button> 
+                                                    </c:otherwise>
+                                                </c:choose>
+
+                                                <button>
+                                                    <a class="rank-up" 
+                                                       href="add-to-promotion?id=${item.id}" 
+                                                       onclick="return <c:if test="${item.promotion.score > 0}">warning()</c:if><c:if test="${empty item.promotion}">confirmInsert()</c:if>"
+                                                           >
+                                                           Rank Up
+                                                       </a>
                                                     </button> 
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <button>
-                                                        <a href="change-user-status?id=${item.id}" style="color:#3cb027">Activate</a>
-                                                    </button> 
-                                                </c:otherwise>
-                                            </c:choose>
-                                            <button>
-                                                <a class="rank-up" 
-                                                   href="add-to-promotion?id=${item.id}" 
-                                                   onclick="return <c:if test="${item.promotion.score > 0}">warning()</c:if><c:if test="${empty item.promotion}">confirmInsert()</c:if>"
-                                                       >
-                                                       Rank Up
-                                                   </a>
-                                                </button> 
-                                            </td>
-                                        </tr>
+                                                </td>
+                                        </c:if>
+                                    </tr>
                                 </c:forEach>
                             </tbody>
                         </table>
@@ -126,27 +144,32 @@
                     </c:otherwise>
                 </c:choose>
             </div>
+
             <div class="user-pagination">
-                <a>🔺</a>
-                <a>1</a>
-                <a>2</a>
-                <a>3</a>
-                <a>4</a>
-                <a>5</a>
-                <a>6</a>
-                <a>7</a>
-                <a>🔻</a>
+                <a href="${pageContext.request.contextPath}?roleId=${param.roleId}&s=${not empty param.s ? param.s : ''}&page=${requestScope.selected_page == 1 ? requestScope.MAX_PAGES : (requestScope.selected_page-1) }">
+                    🔺
+                </a>
+                <c:forEach begin="1" end="${requestScope.MAX_PAGES}" var="i">
+                    <a 
+                        class="<c:if test="${requestScope.selected_page == i}">selected-page</c:if>"
+                        href="${pageContext.request.contextPath}?roleId=${param.roleId}&s=${not empty param.s ? param.s : ''}&page=${i}"
+                        >${i}
+                    </a>
+                </c:forEach>
+                <a href="${pageContext.request.contextPath}?roleId=${param.roleId}&s=${not empty param.s ? param.s : ''}&page=${requestScope.selected_page == requestScope.MAX_PAGES ? 1 : (requestScope.selected_page+1) }">
+                    🔻
+                </a>
             </div>
         </div>
 
         <script>
-                                                       function warning() {
-                                                           alert('User was already scored in ranking list!')
-                                                           return false;
-                                                       }
-                                                       function confirmInsert() {
-                                                           return confirm('Are you want to add this user to ranking ?')
-                                                       }
+                                                           function warning() {
+                                                               alert('User was already scored in ranking list!')
+                                                               return false;
+                                                           }
+                                                           function confirmInsert() {
+                                                               return confirm('Are you want to add this user to ranking ?')
+                                                           }
         </script>
     </body>
 </html>

@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,13 +26,15 @@ import util.EncryptPassword;
 import util.URLConstants;
 import validation.ErrorValidationHandling;
 import validation.UserValidator;
-
+import org.apache.log4j.Logger;
 /**
  *
  * @author HOME
  */
 @WebServlet(name = "CreateUserServlet", urlPatterns = {"/create-new-user"})
 public class CreateUserServlet extends HttpServlet {
+
+    static final Logger LOGGER = Logger.getLogger(CreateUserServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -53,7 +53,7 @@ public class CreateUserServlet extends HttpServlet {
         String password = null;
         String phone = null;
         String roleId = null;
-        
+
         boolean isMultiPart = ServletFileUpload.isMultipartContent(request);
         if (!isMultiPart) {
 
@@ -64,7 +64,7 @@ public class CreateUserServlet extends HttpServlet {
             try {
                 items = (List) upload.parseRequest(new ServletRequestContext(request));
             } catch (FileUploadException e) {
-                e.printStackTrace();
+                LOGGER.error(e);
             }
             Iterator iter = items.iterator();
             Hashtable params = new Hashtable();
@@ -84,7 +84,7 @@ public class CreateUserServlet extends HttpServlet {
                         File savedFile = new File(realPath);
                         item.write(savedFile);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error(e);
                     }
                 }
             }//end while
@@ -120,7 +120,7 @@ public class CreateUserServlet extends HttpServlet {
                         request.setAttribute("errors", errors);
                     }
                 } catch (Exception ex) {
-                    Logger.getLogger(SignUpServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.error(ex);
                 }
             }
 
@@ -128,7 +128,6 @@ public class CreateUserServlet extends HttpServlet {
                 request.setAttribute("errors", errors);
             } else {
                 //Pass true -> Validate Success
-                System.out.println("Validated TRUE");
                 User user = new User();
                 user.setEmail(email);
                 user.setName(name);
@@ -146,7 +145,7 @@ public class CreateUserServlet extends HttpServlet {
                     userDao.create(user);
                     request.setAttribute("success", "Create Account Success!");
                 } catch (PreexistingEntityException ex) {
-                    Logger.getLogger(SignUpServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.error(ex);
                 }
             }
 
@@ -156,7 +155,7 @@ public class CreateUserServlet extends HttpServlet {
         request.setAttribute("email", email);
         request.setAttribute("password", password);
         request.setAttribute("phone", phone);
-        
+
         RoleDAO roleDAO = new RoleDAO();
         request.setAttribute("ROLES", roleDAO.findAll());
         RequestDispatcher rd = request.getRequestDispatcher(URLConstants.CREATE_NEW_USER_PAGE);
@@ -166,5 +165,15 @@ public class CreateUserServlet extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
+    }
+
+    @Override
+    public void init() throws ServletException {
+        LOGGER.info("INITILIZED");
+    }
+
+    @Override
+    public void destroy() {
+        LOGGER.info("Destroyed");
     }
 }

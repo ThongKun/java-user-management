@@ -27,6 +27,5 @@
             <input type="submit" value="Login" />
         </form>
         <hr/>
-        <a href="${pageContext.request.contextPath}/signup">sign up</a>
     </body>
 </html>

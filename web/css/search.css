@@ -7,7 +7,7 @@ html {
 }
 
 html, body, #root {
-    height:100%;
+    min-height:100vh;
     font-family: cursive;
 }
 
@@ -110,6 +110,7 @@ a:hover {
 .nav-bar .menu li a {
     color: #fcffe1;
     border-bottom: 1px dashed;
+    box-shadow: 0px 2px 5px 2px #e15018e8;
 }
 
 .menu {
@@ -119,7 +120,7 @@ a:hover {
 }
 
 .menu li {
-    padding: 5px 25px;
+    padding: 5px 18px;
 }
 
 .custom-shape-divider-top-1597926621 {
@@ -156,4 +157,19 @@ svg {
 .promotion-container {
     display: flex;
     justify-content: center;
+}
+
+.selected-page {
+    color: #8BC34A;
+    background: #897870;
+    width: 20px;
+    text-align: center;
+}
+
+form.user-form {
+    display: flex;
+    flex-direction: column;
+    width: 24rem;
+    align-items: center;
+    margin: auto;
 }

@@ -7,11 +7,12 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Promotion</title>
+        <title>Promotion History</title>
         <style>
             <%@ include file="/css/search.css" %>
         </style>
@@ -25,78 +26,63 @@
         <div class="nav-bar">
             <span>${sessionScope.userinfo.name} > Role: ${sessionScope.userinfo.role.name} </span>
             <ul class="menu">
-                <li><a href="view-promotion-history">View Promotion History</a></li>
+                <c:if test="${sessionScope.userinfo.role.name == 'admin'}">
+                    <li>
+                        <a href="view-promotion">
+                            Promotion List
+                        </a>
+                    </li>
+                </c:if>
                 <li><a href="${pageContext.request.contextPath}/">Search Page</a></li>
                 <li><a href="logout">Log Out</a></li>
             </ul>
         </div>
 
-        <h1 class="title">Ranking</h1>
+        <h1 class="title">View Promotion History</h1>
+
         <div class="promotion-container">
             <c:choose>
-                <c:when test="${fn:length(requestScope.promotions) > 0}">
+                <c:when test="${fn:length(requestScope.promotionsHisotry) > 0}">
                     <table border="1">
                         <thead>
                             <tr>
                                 <th>No.</th>
                                 <th>Avatar</th>
                                 <th>Name</th>
+                                <th>Email</th>
                                 <th>Role</th>
                                 <th>Score</th>
-                                <th></th>
+                                <th>
+                                    <a href="view-promotion-history?sort=desc">⬇️</a>
+                                    Assignment Date
+                                    <a href="view-promotion-history?sort=asc">⬆️</a>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <c:forEach items="${requestScope.promotions}" var="item" varStatus="counter">
-                            <form action="update-user-promotion?id=${item.id}" method="post">
+                            <c:forEach items="${requestScope.promotionsHisotry}" var="item" varStatus="counter">
                                 <tr>
                                     <td>${counter.count}</td>
                                     <td>
                                         <img src="images/${item.userId.img}" width="100px" height="auto"/>
                                     </td>
                                     <td>${item.userId.name}</td>
+                                    <td>${item.userId.email}</td>
                                     <td>${item.userId.role.name}</td>
+                                    <td>✨${item.score}✨</td>
                                     <td>
-                                        <select name="score">
-                                            <option value="5" <c:if test="${item.score eq 5}">selected</c:if>>
-                                                    5✨
-                                                </option>
-                                            <c:forEach begin="1" end="10" var="i">
-                                                <c:if test="${i != 5}">
-                                                    <option value="${i}" <c:if test="${item.score eq i}">selected</c:if>>
-                                                        ${i}✨
-                                                    </option>
-                                                </c:if>
-                                            </c:forEach>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <button type="submit" style="color:blue" onclick="return confirmUpdate(this)">
-                                            Update
-                                        </button>
-                                        <button>
-                                            <a href="remove-user-promotion?id=${item.id}" style="color:#6c6a6c">
-                                                Remove
-                                            </a>
-                                        </button>
+                                        <fmt:formatDate pattern="dd-MM-YYYY HH:mm:ss" value="${item.updateAt}"/>
                                     </td>
                                 </tr>
-                            </form>
-                        </c:forEach>
+                            </c:forEach>
                         </tbody>
                     </table>
                 </c:when>
                 <c:otherwise>
-                    <h3>Ranking List Empty!</h3>
+                    <h3>Promotion History Empty!</h3>
                 </c:otherwise>
             </c:choose>
         </div>
 
-        <script>
-            function confirmUpdate(e) {
-                let check = confirm("Are you sure to update the user's rank ?")
-                return check;
-            }
-        </script>
     </body>
 </html>

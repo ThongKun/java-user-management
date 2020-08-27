@@ -2,6 +2,7 @@ package controller.promotion;
 
 import dao.PromotionDAO;
 import java.io.IOException;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,23 +15,26 @@ import util.URLConstants;
  *
  * @author ThongLV
  */
-@WebServlet(name = "RemoveUserPromotionServlet", urlPatterns = {"/remove-user-promotion"})
-public class RemoveUserPromotionServlet extends HttpServlet {
+@WebServlet(name = "ViewPromotionHistoryServet", urlPatterns = {"/view-promotion-history"})
+public class ViewPromotionHistoryServet extends HttpServlet {
 
-    static final Logger LOGGER = Logger.getLogger(RemoveUserPromotionServlet.class);
+    static final Logger LOGGER = Logger.getLogger(ViewPromotionHistoryServet.class);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String promotionId = request.getParameter("id");
-        if (promotionId == null || promotionId.isEmpty()) {
-            response.sendRedirect(URLConstants.VIEW_PROMOTION_REQUEST);
+        String sort = request.getParameter("sort");
+        if (sort == null) {
+            sort = "asc";
+        } else if (!sort.toLowerCase().equals("asc") && !sort.toLowerCase().equals("desc")) {
+            sort = "asc";
         }
 
         PromotionDAO promotionDAO = new PromotionDAO();
-        promotionDAO.removePromotion(Integer.parseInt(promotionId));
+        request.setAttribute("promotionsHisotry", promotionDAO.findPromotions(sort));
 
-        response.sendRedirect(URLConstants.VIEW_PROMOTION_REQUEST);
+        RequestDispatcher rd = request.getRequestDispatcher(URLConstants.VIEW_PROMOTION_HISTORY_PAGE);
+        rd.forward(request, response);
     }
 
     @Override
@@ -41,7 +45,7 @@ public class RemoveUserPromotionServlet extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 
     @Override
     public void init() throws ServletException {

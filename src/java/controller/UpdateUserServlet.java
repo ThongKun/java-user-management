@@ -15,6 +15,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 import org.apache.tomcat.util.http.fileupload.FileItem;
 import org.apache.tomcat.util.http.fileupload.FileItemFactory;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
@@ -28,10 +29,12 @@ import validation.UserValidator;
 
 /**
  *
- * @author HOME
+ * @author ThongLV
  */
 @WebServlet(name = "UpdateUserServlet", urlPatterns = {"/update-user"})
 public class UpdateUserServlet extends HttpServlet {
+
+    static final Logger LOGGER = Logger.getLogger(UpdateUserServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -68,7 +71,7 @@ public class UpdateUserServlet extends HttpServlet {
             try {
                 items = (List) upload.parseRequest(new ServletRequestContext(request));
             } catch (FileUploadException e) {
-                e.printStackTrace();
+                LOGGER.error(e);
             }
             Iterator iter = items.iterator();
             Hashtable params = new Hashtable();
@@ -88,7 +91,7 @@ public class UpdateUserServlet extends HttpServlet {
                         File savedFile = new File(realPath);
                         item.write(savedFile);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error(e);
                     }
                 }
             }//end while
@@ -150,4 +153,13 @@ public class UpdateUserServlet extends HttpServlet {
         return "Short description";
     }
 
+    @Override
+    public void init() throws ServletException {
+        LOGGER.info("INITILIZED");
+    }
+
+    @Override
+    public void destroy() {
+        LOGGER.info("Destroyed");
+    }
 }

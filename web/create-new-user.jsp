@@ -16,21 +16,29 @@
         </style>
     </head>
     <body>
-        <ul>
-            <li>
-                <a href="${pageContext.request.contextPath}/">Search Page</a>
-            </li>
-        </ul> 
-        <h1>Create New User</h1>
+        <div class="custom-shape-divider-top-1597926621">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+            </svg>
+        </div>
+        <div class="nav-bar">
+            <span>${sessionScope.userinfo.name} > Role: ${sessionScope.userinfo.role.name} </span>
+            <ul class="menu">
+                <li><a href="${pageContext.request.contextPath}/">Search Page</a></li>
+                <li><a href="logout">Log Out</a></li>
+            </ul>
+        </div>
+                
+        <h1 align="center">Create New User</h1>
         <c:if test="${requestScope.success != null}">
-            <font color="green">
+            <font color="green" align="center" style="display: block;">
             ${requestScope.success}
             </font>
         </c:if>
         <c:if test="${not empty requestScope.errors.duplicateEmailError}">
             <p style="color:red">${requestScope.errors.duplicateEmailError}</p>
         </c:if>
-        <form action="create-new-user" method="POST" enctype="multipart/form-data">
+            <form class="user-form" action="create-new-user" method="POST" enctype="multipart/form-data">
             <c:if test="${not empty requestScope.errors.nameError}">
                 <p style="color:red">${requestScope.errors.nameError}</p>
             </c:if>

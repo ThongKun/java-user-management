@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package entity;
 
 import java.io.Serializable;
@@ -15,10 +14,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -28,7 +28,7 @@ import javax.persistence.TemporalType;
  * @author ThongLV
  */
 @Entity
-@Table(catalog = "lab01", schema = "")
+@Table(catalog = "lab01", name = "promotion", schema = "dbo")
 @NamedQueries({
     @NamedQuery(name = "Promotion.findAll", query = "SELECT p FROM Promotion p"),
     @NamedQuery(name = "Promotion.findById", query = "SELECT p FROM Promotion p WHERE p.id = :id"),
@@ -36,6 +36,7 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "Promotion.findByCreateAt", query = "SELECT p FROM Promotion p WHERE p.createAt = :createAt"),
     @NamedQuery(name = "Promotion.findByUpdateAt", query = "SELECT p FROM Promotion p WHERE p.updateAt = :updateAt")})
 public class Promotion implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -129,7 +130,17 @@ public class Promotion implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Promotion[ id=" + id + " ]";
+        return "entity.test.Promotion[ id=" + id + " ]";
     }
 
+    @PrePersist
+    void createAt() {
+        this.createAt = new Date();
+        this.updateAt = new Date();
+    }
+
+    @PreUpdate
+    void updateAt() {
+        this.updateAt = new Date();
+    }
 }

@@ -17,4 +17,8 @@
         <param-name>upload.location</param-name>
         <param-value>D:\NetBeansProjects\lab01\web</param-value>
     </context-param>
+    <context-param>
+        <param-name>log4j-config-location</param-name>
+        <param-value>WEB-INF/log4j.properties</param-value>
+    </context-param>
 </web-app>

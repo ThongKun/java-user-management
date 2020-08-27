@@ -11,6 +11,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
+import util.Constants;
 import util.URLConstants;
 
 /**
@@ -19,6 +21,9 @@ import util.URLConstants;
  */
 @WebServlet(name = "SearchServlet", urlPatterns = {"/search"})
 public class SearchServlet extends HttpServlet {
+    
+    static final Logger LOGGER = Logger.getLogger(SearchServlet.class);
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -28,15 +33,29 @@ public class SearchServlet extends HttpServlet {
             searchKey = "";
         }
         String roleId = request.getParameter("roleId");
-      
+        request.setAttribute("roleId", roleId);
+        request.setAttribute("s", searchKey);
+        
+        // Find/Search User
         User u = (User) request.getSession().getAttribute("userinfo");
-        List<User> users = userDAO.findUsers(searchKey, roleId == null ? -1 : Integer.parseInt(roleId), u.getRole());
-        request.setAttribute("USERS", users);
-
+        
+        // Get User Number Based on Search Condition + User Role + Role Selected
+        int usersNumber = userDAO.getUsersNumbers(searchKey, (roleId == null || roleId.isEmpty()) ? -1 : Integer.parseInt(roleId), u.getRole());
+//        request.setAttribute("USERS", users);
+        
+        // Find Max Page 
+        int maxPages = (int) Math.ceil((float)usersNumber/7);
+        request.setAttribute("MAX_PAGES", maxPages);
+        int selected_page = request.getParameter("page") == null || request.getParameter("page").isEmpty() 
+                ? 1 : Integer.parseInt(request.getParameter("page"));
+        request.setAttribute("selected_page", selected_page);
+        
+        List<User> users2 = userDAO.findUsers(searchKey, (roleId == null || roleId.isEmpty()) ? -1 : Integer.parseInt(roleId), u.getRole(), Constants.MAX_RESULT, selected_page);
+        request.setAttribute("USERS", users2);
+        
         RoleDAO roleDAO = new RoleDAO();
         request.setAttribute("ROLES", roleDAO.findAll());
 
-//        System.out.println(users.toString());
         RequestDispatcher rd = request.getRequestDispatcher(URLConstants.SEARCH_PAGE);
         rd.forward(request, response);
     }
@@ -46,4 +65,15 @@ public class SearchServlet extends HttpServlet {
         return "Short description";
     }
 
+    @Override
+    public void init() throws ServletException {
+        LOGGER.info("INITILIZED");
+    }
+
+    @Override
+    public void destroy() {
+        LOGGER.info("Destroyed");
+    }
+    
+    
 }
